@@ -1,0 +1,105 @@
+{
+     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+     "contentVersion": "1.0.0.0",
+     "parameters": {
+          "vnet": {
+               "type": "string",
+               "metadata": {
+                    "description": "VNet Name"
+               }
+          },
+          "addressSpace": {
+               "type": "string",
+               "defaultValue": "10.0.0.0/16",
+               "metadata": {
+                    "description": "VNet Address Space"
+               }
+          },
+          "subnetAddresses": {
+               "type": "array",
+               "defaultValue": ["10.0.0.0/24","10.0.1.0/24","10.0.2.0/24"],
+               "metadata": {
+                    "description": "Array of Subnet"
+               }
+          },
+          "subnetNames": {
+               "type": "array",
+               "defaultValue": ["frontend","app","data"],
+               "metadata": {
+                    "description": "Array of Subnet"
+               }
+          },
+          "nsg": {
+               "type": "string",
+               "defaultValue": "default-nsg",
+               "metadata": {
+                    "description": "NSG Rules"
+               }
+          }
+     },
+     "functions": [],
+     "variables": {},
+     "resources": [
+          {
+               "name": "[parameters('nsg')]",
+               "type": "Microsoft.Network/networkSecurityGroups",
+               "apiVersion": "2018-08-01",
+               "location": "[resourceGroup().location]",
+               "properties": {
+                    "securityRules": [
+                         {
+                              "name": "rdp",
+                              "properties": {
+                                   "description": "description",
+                                   "protocol": "Tcp",
+                                   "sourcePortRange": "*",
+                                   "destinationPortRange": "3389",
+                                   "sourceAddressPrefix": "*",
+                                   "destinationAddressPrefix": "*",
+                                   "access": "Allow",
+                                   "priority": 100,
+                                   "direction": "Inbound"
+                              }
+                         }
+                    ]
+               }
+          },
+          {
+               "name": "[parameters('vnet')]",
+               "type": "Microsoft.Network/virtualNetworks",
+               "apiVersion": "2019-11-01",
+               "location": "[resourceGroup().location]",
+               "tags": {
+                    "displayName": "[parameters('vnet')]"
+               },
+               "properties": {
+                    "addressSpace": {
+                         "addressPrefixes": [
+                              "[parameters('addressSpace')]"
+                         ]
+                    }
+               }
+          },
+          {
+               "name": "[concat(parameters('vnet'),'/',parameters('subnetNames')[copyIndex()])]",
+               "type": "Microsoft.Network/virtualNetworks/subnets",
+               "apiVersion": "2019-11-01",
+               "dependsOn": [
+                    "[resourceId('Microsoft.Network/virtualNetworks',parameters('vnet'))]",
+                    "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg'))]"
+               ],
+               "properties": {
+                    "addressPrefix": "[parameters('subnetAddresses')[copyIndex()]]",
+                    "networkSecurityGroup": {
+                         "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg'))]"
+                    }
+               },
+               "copy": {
+                    "name": "subnetcopy",
+                    "mode": "Serial",
+                    "count": "[length(parameters('subnetAddresses'))]"
+               }
+          }
+     ],
+     "outputs": {}
+}    

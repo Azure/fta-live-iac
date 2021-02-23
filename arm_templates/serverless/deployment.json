@@ -1,0 +1,269 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the application. Will be used by default as resource name prefix."
+      }
+    },
+    "environmentName": {
+      "type": "string",
+      "defaultValue": "Dev",
+      "allowedValues": [
+        "Dev",
+        "Test",
+        "QA",
+        "Stage",
+        "Beta",
+        "Prod",
+        "dev",
+        "test",
+        "qa",
+        "stage",
+        "beta",
+        "prod"
+      ]
+    },
+    "runtime": {
+      "type": "string",
+      "defaultValue": "dotnet",
+      "allowedValues": [
+        "node",
+        "dotnet",
+        "java"
+      ],
+      "metadata": {
+        "description": "The language worker runtime to load in the function app."
+      }
+    },
+    "identity": {
+      "type": "string",
+      "metadata": {
+        "description": "MSI to execute AZ CLI"
+      }
+    }
+  },
+  "variables": {
+    "appNameWithEnv": "[toLower(concat(parameters('name'),'-',parameters('environmentName')))]",
+    "hostingPlanName": "[concat(variables('appNameWithEnv'),'-asp')]",
+    "functionAppName": "[variables('appNameWithEnv')]",
+    "appInsightsName": "[concat(variables('appNameWithEnv'),'-ai')]",
+    "storageAccountName": "[toLower(replace(concat(variables('functionAppName'),'app'),'-',''))]",
+    "location": "[resourceGroup().location]"
+  },
+  "resources": [
+    {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[variables('location')]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "accessTier": "Hot"
+            }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2019-10-01-preview",
+      "name": "configStaticWeb",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[variables('storageAccountName')]"
+      ],
+      "kind": "AzureCLI",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('identity')]": {}
+        }
+      },
+      "properties": {
+        "AzCliVersion": "2.0.80",
+        "timeout": "PT30M",
+        "arguments": "[variables('storageAccountName')]",
+        "scriptContent": "az storage blob service-properties update --account-name $1 --static-website --404-document notfound.html --index-document index.html",
+        "cleanupPreference": "Always",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2019-10-01-preview",
+      "name": "getStaticWebURL",
+      "dependsOn": [
+        "configStaticWeb"
+      ],
+      "location": "[variables('location')]",
+      "kind": "AzurePowerShell",
+      "identity": {
+        "type": "userAssigned",
+        "userAssignedIdentities": {
+          "[parameters('identity')]": {
+          }
+        }
+      },
+      "properties": {
+        "azPowerShellVersion": "3.0",
+        "timeout": "PT30M",
+        "arguments": "[concat('-storageAccount ',variables('storageAccountName'),' -resourceGroup ',resourceGroup().name)]",
+        "scriptContent": "
+          param([string] $storageAccount, [string] $resourceGroup)
+          $storage = Get-AzStorageAccount -ResourceGroupName $resourceGroup -Name $storageAccount
+          $output = $storage.PrimaryEndpoints.Web
+          $output = $output.TrimEnd('/')
+          Write-Output $output
+          $DeploymentScriptOutputs = @{}
+          $DeploymentScriptOutputs['text'] = $output
+        ",
+        "cleanupPreference": "Always",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "apiVersion": "2020-06-01",
+      "name": "[variables('hostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[variables('location')]",
+      "tags": {
+        "displayName": "HostingPlan"
+      },
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic"
+      },
+      "properties": {
+        "name": "[variables('hostingPlanName')]",
+        "computeMode": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2020-06-01",
+      "name": "[variables('functionAppName')]",
+      "location": "[variables('location')]",
+      "kind": "functionapp",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+        "getStaticWebURL"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('functionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "~10"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('microsoft.insights/components', variables('appInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "[parameters('runtime')]"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "[reference('getStaticWebURL').outputs.text]"
+            ]
+          }
+        //   ,
+        //   "ipSecurityRestrictions": [
+        //             {
+        //                 "ipAddress": "119.224.22.180/32",
+        //                 "action": "Allow",
+        //                 "tag": "Default",
+        //                 "priority": 100,
+        //                 "name": "client",
+        //                 "description": "client"
+        //             },
+        //             {
+        //                 "ipAddress": "Any",
+        //                 "action": "Deny",
+        //                 "priority": 2147483647,
+        //                 "name": "Deny all",
+        //                 "description": "Deny all access"
+        //             }
+        //   ]    
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2019-10-01-preview",
+      "name": "configureAuthen",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[variables('storageAccountName')]"
+      ],
+      "kind": "AzureCLI",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('identity')]": {}
+        }
+      },
+      "properties": {
+        "AzCliVersion": "2.0.80",
+        "timeout": "PT30M",
+        "arguments": "[concat(variables('storageAccountName'),' ',variables('functionAppName'),' ',reference('getStaticWebURL').outputs.text,' ',subscription().subscriptionId,' ',resourceGroup().name)]",
+        "primaryScriptUri": "https://raw.githubusercontent.com/wviriya/Zero-to-Hero-with-ARM-and-IaC/master/scripts/app_registration.sh",
+        "cleanupPreference": "Always",
+        "retentionInterval": "P1D"
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02-preview",
+      "name": "[variables('appInsightsName')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('appInsightsName')))]": "Resource"
+      },
+      "properties": {
+        "ApplicationId": "[variables('appInsightsName')]",
+        "Request_Source": "IbizaWebAppExtensionCreate"
+      }
+    }
+  ],
+  "outputs": {
+    "appName": {
+      "type": "string",
+      "value": "[variables('functionAppName')]"
+    },
+    "appFqdn": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('functionAppName'))).hostnames[0]]"
+    },
+    "staticWebURL": {
+      "type": "string",
+      "value": "[reference('getStaticWebURL').outputs.text]"
+    }
+
+  }
+}

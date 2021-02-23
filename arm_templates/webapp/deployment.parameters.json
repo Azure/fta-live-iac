@@ -1,0 +1,32 @@
+{
+     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+     "contentVersion": "1.0.0.0",
+     "parameters": {
+          "name": {
+               "value": "__webappname__"
+          },
+          "sku": {
+               "value": "__sku__"
+          },
+          "slots": {
+               "value": 
+               [
+                    {
+                         "name":"dev",
+                         "connectionString": "__devconnstr__",
+                         "connectionType":"Custom"
+                    },
+                    {
+                         "name":"test",
+                         "connectionString": "__testconnstr__",
+                         "connectionType":"Custom"
+                    },
+                    {    
+                         "name":"production",
+                         "connectionString":"__prodconnstr__",
+                         "connectionType":"Custom"
+                    }
+               ]
+          }
+     }
+}
