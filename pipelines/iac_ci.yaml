@@ -90,18 +90,17 @@ stages:
           projects: '**/*.csproj'
 
       - task: DotNetCoreCLI@2
-        displayName: Build
+        displayName: dotnet build
         inputs:
           command: 'build'
           projects: '**/*.csproj'
-          arguments: '--configuration $(buildConfiguration)' 
 
       - task: DotNetCoreCLI@2
-        displayName: publish Code
+        displayName: dotnet publish
         inputs:
           command: publish
           publishWebProjects: True
-          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)\app'
+          arguments: '--output $(Build.ArtifactStagingDirectory)\app'
           zipAfterPublish: True
 
       - task: PublishBuildArtifacts@1
