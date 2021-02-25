@@ -13,7 +13,7 @@ parameters:
   - name: solutionName
     type: string
     displayName: 'Solution Name'
-    default: $(System.TeamProject)
+    default: lower('$(System.TeamProject)ninja')
 
 trigger:
 - main
