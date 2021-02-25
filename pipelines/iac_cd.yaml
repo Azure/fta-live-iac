@@ -13,6 +13,7 @@ parameters:
   - name: solutionName
     type: string
     displayName: 'Solution Name'
+    default: $(System.TeamProject)
 
 trigger:
 - main
