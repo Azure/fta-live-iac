@@ -1,0 +1,40 @@
+parameters:
+  location: 'Australia East'
+  environment: 'dev'
+  name: ''
+
+stages:
+  - stage: 'Deploy_${{ parameters.environment }}_${{ parameter.name }}_infrastructure'
+    jobs: 
+    - deployment: '${{ parameters.environment }}_deployment'
+      environment: '${{ parameters.environment }}_${{ parameter.name }}' #for a parent template, you need to specifically name the environment, otherwise the environment will be dynamically generated as "$(environment_name)" in the Pipelines > Environments. However for a child template, you can parameterise this.
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: DownloadBuildArtifacts@0
+                displayName: 'Download compiled ARM template'
+                inputs:
+                  buildType: 'current'
+                  project: 'FTA'
+                  # this PipelineId will need to be updated based on the ID of your CI pipeline. This wouldnt be a problem if you use a single Build & Deploy YAML pipeline...
+                  pipeline: '72'
+                  specificBuildWithTriggering: true
+                  buildVersionToDownload: 'latest'
+                  downloadType: 'specific'
+                  itemPattern: '*'
+                  downloadPath: '$(System.ArtifactsDirectory)'
+
+              - task: AzureResourceManagerTemplateDeployment@3
+                inputs:
+                  deploymentScope: 'Resource Group'
+                  azureResourceManagerConnection: '${{ variables.azure_service_connection }}'
+                  subscriptionId: '$(subscription_id)'
+                  action: 'Create Or Update Resource Group'
+                  resourceGroupName: '${{ parameters.environment }}-${{ parameters.name }}-rg'
+                  location: '${{ parameters.location }}'
+                  templateLocation: 'Linked artifact'
+                  # these next 2 lines need to be updated based on your template file name, and template file parameters
+                  csmFile: '$(System.ArtifactsDirectory)\arm_templates\main.json'
+                  overrideParameters: -name "${{ parameters.name }}"  -environment "${{ parameters.environment }}"
+                  deploymentMode: 'Incremental'

@@ -1,0 +1,30 @@
+parameters:
+  environment: 'dev'
+  name: ''
+
+stages:
+  - stage: 'Deploy_${{ parameters.environment }}_${{ parameter.name }}_infrastructure'
+    jobs: 
+    - deployment: '${{ parameters.environment }}_deployment'
+      environment: '${{ parameters.environment }}_${{ parameter.name }}' #for a parent template, you need to specifically name the environment, otherwise the environment will be dynamically generated as "$(environment_name)" in the Pipelines > Environments. However for a child template, you can parameterise this.
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: AzureAppServiceSettings@1
+              inputs:
+                azureSubscription: $(azure_service_connection)
+                appName:  ${{ parameters.name }}
+                resourceGroupName:  '${{ parameters.environment }}-${{ parameters.name }}-rg'
+                slotName:  ${{ parameters.environment }}
+
+            - task: AzureWebApp@1
+              inputs:
+                azureSubscription: ${{parameters.azure_service_connection}}
+                appType: 'webApp'
+                appName: ${{parameters.app_service_name}}
+                deployToSlotOrASE: true
+                ResourceGroupName: ${{parameters.resource_group}}
+                SlotName: ${{parameters.environment}}
+                package: '$(System.ArtifactsDirectory)\app\artifacts\**\*.zip'
+                deploymentMethod: 'auto'

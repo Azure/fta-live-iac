@@ -1,0 +1,39 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+parameters:
+  - name: location
+    type: string
+    displayName: 'Azure Region'
+    default: 'Australia East'
+    values:
+      - 'Australia East'
+      - 'Australia SouthEast'
+  - name: solutionName
+    type: string
+    displayName: 'Solution Name'
+
+trigger:
+- main
+
+stages:
+
+- template: templates/iac_release.yaml
+  parameters:
+    location: '${{ parameters.location }}'
+    environment: 'dev'
+    name: '${{ parameters.solutionName }}'
+
+- template: templates/iac.yaml
+  parameters:
+    location: '${{ parameters.location }}'
+    environment: 'test'
+    name: '${{ parameters.solutionName }}'
+    
+- template: templates/iac.yaml
+  parameters:
+    location: '${{ parameters.location }}'
+    environment: 'prod'
+    name: '${{ parameters.solutionName }}'
+
