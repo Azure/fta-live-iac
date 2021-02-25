@@ -73,7 +73,7 @@ stages:
         displayName: 'Use .NET Core sdk'
         inputs:
           packageType: sdk
-          version: 2.0.9
+          version: 2.1.202
           installationPath: $(Agent.ToolsDirectory)/dotnet
 
       - task: DotNetCoreCLI@2
