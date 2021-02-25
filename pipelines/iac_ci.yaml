@@ -74,7 +74,14 @@ stages:
         inputs:
           packageType: sdk
           version: 3.1.406
-          installationPath: $(Agent.ToolsDirectory)/dotnet
+          installationPath: $(Agent.ToolsDirectory)\dotnet
+
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core 3.1'
+        inputs:
+          packageType: runtime
+          version: 3.1.12
+          installationPath: $(Agent.ToolsDirectory)\dotnet
 
       - task: DotNetCoreCLI@2
         displayName: Restore
