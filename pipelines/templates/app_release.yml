@@ -26,5 +26,5 @@ stages:
                 deployToSlotOrASE: true
                 ResourceGroupName: ${{parameters.resource_group}}
                 SlotName: ${{parameters.environment}}
-                package: '$(System.ArtifactsDirectory)\app\artifacts\**\*.zip'
+                package: '$(System.ArtifactsDirectory)\app\**\*.zip'
                 deploymentMethod: 'auto'

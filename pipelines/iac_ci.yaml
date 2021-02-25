@@ -58,13 +58,13 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Publish ARM Templates'
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)\arm_templates'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)\templates'
         ArtifactName: 'templates'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish ARM-TTK scan results'
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)\results'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)\arm-ttk-results'
         ArtifactName: 'arm-ttk-results'
 
   - job: Build_Code
@@ -87,11 +87,11 @@ stages:
         inputs:
           command: publish
           publishWebProjects: True
-          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+          arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)\app'
           zipAfterPublish: True
 
       - task: PublishBuildArtifacts@1
         displayName: Publish artifacts
         inputs:
           pathtoPublish: '$(Build.ArtifactStagingDirectory)\app' 
-          artifactName: 'artifacts'
+          artifactName: 'app'
