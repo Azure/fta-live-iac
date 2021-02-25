@@ -69,6 +69,13 @@ stages:
 
   - job: Build_Code
     steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk'
+        inputs:
+          packageType: sdk
+          version: 3.1.406
+          installationPath: $(Agent.ToolsDirectory)/dotnet
+
       - task: DotNetCoreCLI@2
         displayName: Restore
         inputs:
