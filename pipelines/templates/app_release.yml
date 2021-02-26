@@ -27,7 +27,7 @@ stages:
             - task: AzureWebApp@1
               inputs:
                 azureSubscription: '$(azure_service_connection)'
-                appName: '${{ parameters.environment }}${{parameters.name}}''
+                appName: '${{ parameters.environment }}${{parameters.name}}'
                 ResourceGroupName: '${{ parameters.environment }}-${{ parameters.name }}-rg'
                 package: '$(Pipeline.Workspace)\app\**\*.zip'
                 deploymentMethod: 'auto'
