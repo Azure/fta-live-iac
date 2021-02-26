@@ -10,8 +10,6 @@ parameters:
     values:
       - 'Australia East'
       - 'Australia SouthEast'
-
-
   - name: solutionName
     type: string
     displayName: 'Solution Name'
