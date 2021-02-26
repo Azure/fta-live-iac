@@ -11,7 +11,7 @@ trigger:
 
 variables:
 - name: _filePath
-  value: '$(Build.SourcesDirectory)\bicep\'
+  value: '$(Build.SourcesDirectory)/bicep/'
 - name: _fileName
   value: 'main'
 
@@ -26,45 +26,45 @@ stages:
     - task: PowerShell@2
       displayName: 'Clone and Install BICEP'
       inputs:
-        filePath: '.\pipelines\scripts\install_Bicep.ps1'
-        arguments: '-installPath "$(Build.BinariesDirectory)\bicep"'
+        filePath: './pipelines/scripts/install_Bicep.ps1'
+        arguments: '-installPath "$(Build.BinariesDirectory)/bicep"'
 
     - task: PowerShell@2
       displayName: 'Clone and Install ARMTTK'
       inputs:
-        filePath: '.\pipelines\scripts\install_ARMTTK.ps1'
+        filePath: './pipelines/scripts/install_ARMTTK.ps1'
         arguments: '-installPath "$(Build.BinariesDirectory)"'
 
     - task: PowerShell@2
       displayName: 'Build the ARM Template from the BICEP file'
       inputs:
         targetType: 'inline'
-        script: '$(Build.BinariesDirectory)\bicep\bicep.exe build ${{ variables._filePath }}${{ variables._fileName }}.bicep'
+        script: '$(Build.BinariesDirectory)/bicep/bicep.exe build ${{ variables._filePath }}${{ variables._fileName }}.bicep'
 
     - task: CopyFiles@2
       displayName: 'Copy ARM Template files to Staging directory'
       inputs:
         SourceFolder: '${{ variables._filePath }}'
         Contents: '${{ variables._fileName }}.json'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)\templates'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/templates'
 
     - task: PowerShell@2
       displayName: 'Linting - ARM-TTK Validate ARM templates adhere to best practice'
       inputs:
-        filePath: '.\pipelines\linting\ARM-TTK_linting.ps1'
-        arguments: '-ARMTTKModuleDirectory "$(Build.BinariesDirectory)\arm-ttk-latest" -ARMTTKResultsDirectory "$(Build.ArtifactStagingDirectory)" -TemplatesToScanDirectory "$(Build.ArtifactStagingDirectory)\templates"'
+        filePath: './pipelines/linting/ARM-TTK_linting.ps1'
+        arguments: '-ARMTTKModuleDirectory "$(Build.BinariesDirectory)/arm-ttk-latest" -ARMTTKResultsDirectory "$(Build.ArtifactStagingDirectory)" -TemplatesToScanDirectory "$(Build.ArtifactStagingDirectory)/templates"'
         errorActionPreference: 'silentlyContinue'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish ARM Templates'
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)\templates'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/templates'
         ArtifactName: 'templates'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish ARM-TTK scan results'
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)\arm-ttk-results'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/arm-ttk-results'
         ArtifactName: 'arm-ttk-results'
 
   - job: Build_Code
@@ -74,14 +74,14 @@ stages:
         inputs:
           packageType: sdk
           version: 3.1.406
-          installationPath: $(Agent.ToolsDirectory)\dotnet
+          installationPath: $(Agent.ToolsDirectory)/dotnet
 
       - task: UseDotNet@2
         displayName: 'Use .NET Core 3.1'
         inputs:
           packageType: runtime
           version: 3.1.12
-          installationPath: $(Agent.ToolsDirectory)\dotnet
+          installationPath: $(Agent.ToolsDirectory)/dotnet
 
       - task: DotNetCoreCLI@2
         displayName: Restore
@@ -100,11 +100,11 @@ stages:
         inputs:
           command: publish
           publishWebProjects: True
-          arguments: '--output $(Build.ArtifactStagingDirectory)\app'
+          arguments: '--output $(Build.ArtifactStagingDirectory)/app'
           zipAfterPublish: True
 
       - task: PublishBuildArtifacts@1
         displayName: Publish artifacts
         inputs:
-          pathtoPublish: '$(Build.ArtifactStagingDirectory)\app' 
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/app' 
           artifactName: 'app'
