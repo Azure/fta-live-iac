@@ -22,7 +22,6 @@ stages:
                   specificBuildWithTriggering: true
                   buildVersionToDownload: 'latest'
                   downloadType: 'specific'
-                  itemPattern: '*'
                   downloadPath: '$(System.ArtifactsDirectory)'
 
               - task: AzureResourceManagerTemplateDeployment@3
