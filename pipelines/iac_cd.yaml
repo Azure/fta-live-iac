@@ -26,13 +26,13 @@ stages:
     environment: 'dev'
     name: '${{ parameters.solutionName }}'
 
-- template: templates/iac.yaml
+- template: templates/iac_release.yaml
   parameters:
     location: '${{ parameters.location }}'
     environment: 'test'
     name: '${{ parameters.solutionName }}'
     
-- template: templates/iac.yaml
+- template: templates/iac_release.yaml
   parameters:
     location: '${{ parameters.location }}'
     environment: 'prod'
