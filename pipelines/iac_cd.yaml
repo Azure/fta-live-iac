@@ -19,36 +19,36 @@ trigger:
 - main
 
 stages:
-- template: templates/iac_release.yaml
-  parameters:
-    location: '${{ parameters.location }}'
-    environment: 'dev'
-    name: '${{ parameters.solutionName }}'
+  - template: templates/iac_release.yaml
+    parameters:
+      location: '${{ parameters.location }}'
+      environment: 'dev'
+      name: '${{ parameters.solutionName }}'
 
-- template: templates/iac_release.yaml
-  parameters:
-    location: '${{ parameters.location }}'
-    environment: 'test'
-    name: '${{ parameters.solutionName }}'
-    
-- template: templates/iac_release.yaml
-  parameters:
-    location: '${{ parameters.location }}'
-    environment: 'prod'
-    name: '${{ parameters.solutionName }}'
+  - template: templates/iac_release.yaml
+    parameters:
+      location: '${{ parameters.location }}'
+      environment: 'test'
+      name: '${{ parameters.solutionName }}'
+      
+  - template: templates/iac_release.yaml
+    parameters:
+      location: '${{ parameters.location }}'
+      environment: 'prod'
+      name: '${{ parameters.solutionName }}'
 
-- template: templates/app_release.yml
-  parameters:
-    environment: 'dev'
-    name: '${{ parameters.solutionName }}'
+  - template: templates/app_release.yml
+    parameters:
+      environment: 'dev'
+      name: '${{ parameters.solutionName }}'
 
-- template: templates/app_release.yml
-  parameters:
-    environment: 'test'
-    name: '${{ parameters.solutionName }}'
-    
-- template: templates/app_release.yml
-  parameters:
-    environment: 'prod'
-    name: '${{ parameters.solutionName }}'
+  - template: templates/app_release.yml
+    parameters:
+      environment: 'test'
+      name: '${{ parameters.solutionName }}'
+      
+  - template: templates/app_release.yml
+    parameters:
+      environment: 'prod'
+      name: '${{ parameters.solutionName }}'
 
