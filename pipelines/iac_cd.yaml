@@ -33,7 +33,7 @@ stages:
         specificBuildWithTriggering: true
         buildVersionToDownload: 'latest'
         downloadType: 'specific'
-        downloadPath: '$(System.ArtifactsDirectory)'
+        downloadPath: '$(Pipeline.Workspace)'
 
 - template: templates/iac_release.yaml
   parameters:
