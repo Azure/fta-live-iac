@@ -3,10 +3,10 @@ parameters:
   name: ''
 
 stages:
-  - stage: 'Deploy_${{ parameters.environment }}_${{ parameter.name }}_application'
+  - stage: 'Deploy_${{ parameters.environment }}_${{ parameters.name }}_application'
     jobs: 
     - deployment: '${{ parameters.environment }}_deployment'
-      environment: '${{ parameters.environment }}_${{ parameter.name }}' #for a parent template, you need to specifically name the environment, otherwise the environment will be dynamically generated as "$(environment_name)" in the Pipelines > Environments. However for a child template, you can parameterise this.
+      environment: '${{ parameters.environment }}_${{ parameters.name }}' #for a parent template, you need to specifically name the environment, otherwise the environment will be dynamically generated as "$(environment_name)" in the Pipelines > Environments. However for a child template, you can parameterise this.
       strategy:
         runOnce:
           deploy:
