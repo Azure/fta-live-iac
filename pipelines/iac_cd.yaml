@@ -30,10 +30,11 @@ stages:
         project: 'FTA'
         # this PipelineId will need to be updated based on the ID of your CI pipeline. This wouldnt be a problem if you use a single Build & Deploy YAML pipeline...
         pipeline: '72'
-        specificBuildWithTriggering: false
+        specificBuildWithTriggering: true
         buildVersionToDownload: 'latest'
         downloadType: 'specific'
         downloadPath: '$(System.ArtifactsDirectory)'
+        artifactName: 'templates'
 
 - template: templates/iac_release.yaml
   parameters:
