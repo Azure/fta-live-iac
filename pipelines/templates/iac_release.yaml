@@ -12,6 +12,20 @@ stages:
         runOnce:
           deploy:
             steps:
+              - task: DownloadBuildArtifacts@0
+                displayName: 'Download compiled ARM template'
+                inputs:
+                  buildType: 'specific'
+                  project: 'FTA'
+                  # this PipelineId will need to be updated based on the ID of your CI pipeline. This wouldnt be a problem if you use a single Build & Deploy YAML pipeline...
+                  pipeline: '72'
+                  specificBuildWithTriggering: true
+                  buildVersionToDownload: 'latest'
+                  downloadType: 'specific'
+                  downloadPath: '$(Pipeline.Workspace)'
+                  artifactName: 'templates'
+                  
+
               - task: AzureResourceManagerTemplateDeployment@3
                 inputs:
                   deploymentScope: 'Resource Group'

@@ -19,22 +19,6 @@ trigger:
 - main
 
 stages:
-- stage: Download_Artifact
-  jobs:
-  - job:
-    steps:
-    - task: DownloadBuildArtifacts@0
-      displayName: 'Download compiled ARM template'
-      inputs:
-        buildType: 'specific'
-        project: 'FTA'
-        # this PipelineId will need to be updated based on the ID of your CI pipeline. This wouldnt be a problem if you use a single Build & Deploy YAML pipeline...
-        pipeline: '72'
-        specificBuildWithTriggering: true
-        buildVersionToDownload: 'latest'
-        downloadType: 'specific'
-        downloadPath: '$(Pipeline.Workspace)'
-
 - template: templates/iac_release.yaml
   parameters:
     location: '${{ parameters.location }}'
@@ -50,6 +34,21 @@ stages:
 - template: templates/iac_release.yaml
   parameters:
     location: '${{ parameters.location }}'
+    environment: 'prod'
+    name: '${{ parameters.solutionName }}'
+
+- template: templates/app_release.yaml
+  parameters:
+    environment: 'dev'
+    name: '${{ parameters.solutionName }}'
+
+- template: templates/app_release.yaml
+  parameters:
+    environment: 'test'
+    name: '${{ parameters.solutionName }}'
+    
+- template: templates/app_release.yaml
+  parameters:
     environment: 'prod'
     name: '${{ parameters.solutionName }}'
 
