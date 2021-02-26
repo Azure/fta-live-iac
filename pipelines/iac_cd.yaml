@@ -37,17 +37,17 @@ stages:
     environment: 'prod'
     name: '${{ parameters.solutionName }}'
 
-- template: templates/app_release.yaml
+- template: templates/app_release.yml
   parameters:
     environment: 'dev'
     name: '${{ parameters.solutionName }}'
 
-- template: templates/app_release.yaml
+- template: templates/app_release.yml
   parameters:
     environment: 'test'
     name: '${{ parameters.solutionName }}'
     
-- template: templates/app_release.yaml
+- template: templates/app_release.yml
   parameters:
     environment: 'prod'
     name: '${{ parameters.solutionName }}'
