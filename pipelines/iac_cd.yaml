@@ -10,10 +10,12 @@ parameters:
     values:
       - 'Australia East'
       - 'Australia SouthEast'
+
+
   - name: solutionName
     type: string
     displayName: 'Solution Name'
-    default: lower('$(System.TeamProject)ninja')
+    default: lower('${{ System.TeamProject }} ninja')
 
 trigger:
 - main
