@@ -13,7 +13,7 @@ parameters:
   - name: solutionName
     type: string
     displayName: 'Solution Name'
-    default: 'azureiac'
+    default: 'iac'
 
 trigger:
 - main
