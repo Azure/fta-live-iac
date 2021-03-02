@@ -15,9 +15,9 @@ stages:
                 displayName: 'Download compiled ARM template'
                 inputs:
                   buildType: 'specific'
-                  project: 'FTA'
+                  project: '[Azure DevOps Project Name]'
                   # this PipelineId will need to be updated based on the ID of your CI pipeline. This wouldnt be a problem if you use a single Build & Deploy YAML pipeline...
-                  pipeline: '72'
+                  pipeline: '[Pipeline Id]'
                   specificBuildWithTriggering: true
                   buildVersionToDownload: 'latest'
                   downloadType: 'specific'
