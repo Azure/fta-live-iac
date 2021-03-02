@@ -1,0 +1,110 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+# For your production deployments, you probably want to run CI on ALL branches.
+# You may have separate CI (lighter-weight) processes for your Dev/* builds...
+
+trigger:
+- /*
+
+variables:
+- name: _filePath
+  value: '$(Build.SourcesDirectory)/bicep/'
+- name: _fileName
+  value: 'main'
+
+pool:
+  vmImage: 'windows-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build_ARM_Template
+    steps:
+    - task: PowerShell@2
+      displayName: 'Clone and Install BICEP'
+      inputs:
+        filePath: './pipelines/scripts/install_Bicep.ps1'
+        arguments: '-installPath "$(Build.BinariesDirectory)/bicep"'
+
+    - task: PowerShell@2
+      displayName: 'Clone and Install ARMTTK'
+      inputs:
+        filePath: './pipelines/scripts/install_ARMTTK.ps1'
+        arguments: '-installPath "$(Build.BinariesDirectory)"'
+
+    - task: PowerShell@2
+      displayName: 'Build the ARM Template from the BICEP file'
+      inputs:
+        targetType: 'inline'
+        script: '$(Build.BinariesDirectory)/bicep/bicep.exe build ${{ variables._filePath }}${{ variables._fileName }}.bicep'
+
+    - task: CopyFiles@2
+      displayName: 'Copy ARM Template files to Staging directory'
+      inputs:
+        SourceFolder: '${{ variables._filePath }}'
+        Contents: '${{ variables._fileName }}.json'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/templates'
+
+    - task: PowerShell@2
+      displayName: 'Linting - ARM-TTK Validate ARM templates adhere to best practice'
+      inputs:
+        filePath: './pipelines/linting/ARM-TTK_linting.ps1'
+        arguments: '-ARMTTKModuleDirectory "$(Build.BinariesDirectory)/arm-ttk-latest" -ARMTTKResultsDirectory "$(Build.ArtifactStagingDirectory)" -TemplatesToScanDirectory "$(Build.ArtifactStagingDirectory)/templates"'
+        errorActionPreference: 'silentlyContinue'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish ARM Templates'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/templates'
+        ArtifactName: 'templates'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish ARM-TTK scan results'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)/arm-ttk-results'
+        ArtifactName: 'arm-ttk-results'
+
+  - job: Build_Code
+    steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk'
+        inputs:
+          packageType: sdk
+          version: 3.1.406
+          installationPath: $(Agent.ToolsDirectory)/dotnet
+
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core 3.1'
+        inputs:
+          packageType: runtime
+          version: 3.1.12
+          installationPath: $(Agent.ToolsDirectory)/dotnet
+
+      - task: DotNetCoreCLI@2
+        displayName: Restore
+        inputs:
+          command: restore
+          projects: '**/*.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet build
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: dotnet publish
+        inputs:
+          command: publish
+          publishWebProjects: True
+          arguments: '--output $(Build.ArtifactStagingDirectory)/app'
+          zipAfterPublish: True
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish artifacts
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)/app' 
+          artifactName: 'app'
