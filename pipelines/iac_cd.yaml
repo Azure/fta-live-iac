@@ -15,9 +15,13 @@ parameters:
     displayName: 'Solution Name'
     default: 'iac'
 
-trigger:
-- main
+trigger: none
 
+resources:
+  pipelines:
+    - pipeline: ci
+      source: iac_ci
+      
 stages:
   - template: templates/iac_release.yaml
     parameters:
