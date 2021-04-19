@@ -37,14 +37,18 @@ This sample is a guide for learning basic ARM Template usage. The links in this 
 
 ## [Why I should adopt Infrastructure as Code Practice? (Read John Downs' Blog)](https://techcommunity.microsoft.com/t5/fasttrack-for-azure/the-benefits-of-infrastructure-as-code/ba-p/2069350)
 
+## Bicep
+A language for declaratively deploying Azure resources. You can use Bicep instead of JSON for developing your Azure Resource Manager templates (ARM templates). Bicep simplifies the authoring experience by providing concise syntax, better support for code reuse, and improved type safety. Bicep is a domain-specific language (DSL), which means it's designed for a particular scenario or domain. It isn't intended as a general programming language for writing applications.
+
 ## Azure Resource Manager (ARM) Template
 A native infra-as-code solution for managing Azure resources using a declarative programming paradigm.
 
 ### Concepts
+- [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/bicep-overview)
 - [What is ARM?](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview)
 - [What are ARM Templates?](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview)
-- [Bicep (Experimental)](https://github.com/azure/bicep)
 - [Nested and Linked templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/linked-templates)
+- [Deployment scripts](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-tutorial-deployment-script)
 - [Deployment modes](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-modes)
 - [Best practices](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-best-practices)    
 
@@ -57,6 +61,7 @@ A native infra-as-code solution for managing Azure resources using a declarative
 - [Template references](https://docs.microsoft.com/en-us/azure/templates/)
 - [ARM template functions](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions)
 - [ARM Template Toolkit for analyzing and testing](https://github.com/Azure/arm-ttk)
+- [What-If deployment](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-deploy-what-if?tabs=azure-powershell)
 
 ### CI/CD
 - [Deploy with Azure Pipelines](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/add-template-to-azure-pipelines)
@@ -66,10 +71,7 @@ A native infra-as-code solution for managing Azure resources using a declarative
 - [Microsoft Learn path on ARM template](https://docs.microsoft.com/en-us/learn/paths/deploy-manage-resource-manager-templates)
 
 ### New and preview features
-- [Deployment scripts (GA - DEC 2020)](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-tutorial-deployment-script)
-- [What-If deployment (GA - DEC 2020)](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-deploy-what-if?tabs=azure-powershell)
 - [Template Specs (Preview)](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-specs?tabs=azure-powershell)
-- [Azure Deployment Manager (Preview)](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-specs?tabs=azure-powershell)
 
 ## Other orchestrators
 ### Terraform with Azure
