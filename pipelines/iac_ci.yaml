@@ -19,27 +19,21 @@ pool:
   vmImage: 'windows-latest'
 
 stages:
-- stage: Build
+- stage: Build_ARMTemplate
   jobs:
-  - job: Build_ARM_Template
-    steps:
-    - task: PowerShell@2
-      displayName: 'Clone and Install BICEP'
-      inputs:
-        filePath: './pipelines/scripts/install_Bicep.ps1'
-        arguments: '-installPath "$(Build.BinariesDirectory)/bicep"'
-
     - task: PowerShell@2
       displayName: 'Clone and Install ARMTTK'
       inputs:
         filePath: './pipelines/scripts/install_ARMTTK.ps1'
         arguments: '-installPath "$(Build.BinariesDirectory)"'
 
-    - task: PowerShell@2
+    - task: AzureCLI@2
       displayName: 'Build the ARM Template from the BICEP file'
       inputs:
-        targetType: 'inline'
-        script: '$(Build.BinariesDirectory)/bicep/bicep.exe build ${{ variables._filePath }}${{ variables._fileName }}.bicep'
+        azureSubscription: '${{ parameters.t_p_serviceConnection }}'
+        scriptType: 'pscore'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'Get-ChildItem -Path "${{ parameters._filePath }}" -Filter *.bicep | foreach { az bicep build --file $_.FullName }'
 
     - task: CopyFiles@2
       displayName: 'Copy ARM Template files to Staging directory'
