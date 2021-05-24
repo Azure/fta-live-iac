@@ -21,6 +21,8 @@ pool:
 stages:
 - stage: Build_ARMTemplate
   jobs:
+  - job: Build_ARM
+    steps:
     - task: PowerShell@2
       displayName: 'Clone and Install ARMTTK'
       inputs:
