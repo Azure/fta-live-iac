@@ -7,7 +7,7 @@
 # You may have separate CI (lighter-weight) processes for your Dev/* builds...
 
 trigger:
-- *
+- main
 
 variables:
 - name: _filePath
