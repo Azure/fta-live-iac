@@ -32,7 +32,7 @@ stages:
     - task: AzureCLI@2
       displayName: 'Build the ARM Template from the BICEP file'
       inputs:
-        azureSubscription: '${{ variables._serviceConnection }}'
+        azureSubscription: '$(_serviceConnection)'
         scriptType: 'pscore'
         scriptLocation: 'inlineScript'
         inlineScript: 'Get-ChildItem -Path "${{ variables._filePath }}" -Filter *.bicep | foreach { az bicep build --file $_.FullName }'
