@@ -19,6 +19,8 @@ resources:
   pipelines:
     - pipeline: ci
       source: fta-live-iac-ci
+      project: FTA
+      trigger: true
 
 pool:
   vmImage: 'windows-latest'
