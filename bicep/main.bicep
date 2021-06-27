@@ -1,12 +1,11 @@
 param name string
-param environment string {
-  allowed: [
-    'dev'
-    'test'
-    'prod'
-  ]
-  default: 'dev'
-}
+
+@allowed([
+  'dev'
+  'test'
+  'prod'
+])
+param environment string = 'dev'
 
 var _location = resourceGroup().location
 var _storageAccountSkuName = environment == 'prod' ? 'Standard_GRS' : 'Standard_LRS'
