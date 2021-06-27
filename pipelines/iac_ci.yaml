@@ -7,7 +7,7 @@
 # You may have separate CI (lighter-weight) processes for your Dev/* builds...
 
 trigger:
-- main
+- dev
 
 variables:
 - name: _filePath
@@ -69,15 +69,7 @@ stages:
         displayName: 'Use .NET Core sdk'
         inputs:
           packageType: sdk
-          version: 3.1.406
-          installationPath: $(Agent.ToolsDirectory)/dotnet
-
-      - task: UseDotNet@2
-        displayName: 'Use .NET Core 3.1'
-        inputs:
-          packageType: runtime
-          version: 3.1.12
-          installationPath: $(Agent.ToolsDirectory)/dotnet
+          version: '5.0.x'
 
       - task: DotNetCoreCLI@2
         displayName: Restore

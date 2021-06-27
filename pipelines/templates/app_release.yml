@@ -29,5 +29,10 @@ stages:
                   azureSubscription: '$(azure_service_connection)'
                   appName: '${{ parameters.environment }}${{ parameters.name }}'
                   ResourceGroupName: '${{ parameters.environment }}-${{ parameters.name }}-rg'
+                  deployToSlotOrASE: true
+                  ${{ if eq(parameters.environment, 'prod') }}:
+                    slotName: 'staging'
+                  ${{ if ne(parameters.environment, 'prod') }}:
+                    slotName: 'production' 
                   package: '$(Pipeline.Workspace)/app/**/*.zip'
                   deploymentMethod: 'auto'

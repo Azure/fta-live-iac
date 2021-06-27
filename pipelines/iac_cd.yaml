@@ -24,20 +24,9 @@ resources:
       trigger: true
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'ubuntu-latest'
       
 stages:
-  - template: templates/iac_release.yaml
-    parameters:
-      location: '${{ parameters.location }}'
-      environment: 'dev'
-      name: '${{ parameters.solutionName }}'
-
-  - template: templates/app_release.yml
-    parameters:
-      environment: 'dev'
-      name: '${{ parameters.solutionName }}'
-
   - template: templates/iac_release.yaml
     parameters:
       location: '${{ parameters.location }}'

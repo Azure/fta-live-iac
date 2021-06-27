@@ -3,7 +3,8 @@ param environment string
 param appServiceName string
 
 var appServicePlanSkuName = (environment == 'prod') ? 'P1v3' : 'S1'
-var appServicePlanName = concat((environment == 'prod') ? environment : 'nonprod', '-', appServiceName,'-plan')
+var environmentType = (environment == 'prod') ? environment : 'nonprod'
+var appServicePlanName = '${environmentType}-${appServiceName}-plan'
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
   name: appServicePlanName
@@ -14,9 +15,15 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
 }
 
 resource webApp 'Microsoft.Web/sites@2020-06-01' = {
-  name: concat(environment,appServiceName)
+  name: '${environment}${appServiceName}'
   location: location
   properties: {
     serverFarmId: appServicePlan.id
   }
+}
+
+resource slot 'Microsoft.Web/sites/slots@2021-01-01' = {
+  name: '${environment}${appServiceName}/staging'
+  location: location
+  kind: 'app'
 }
