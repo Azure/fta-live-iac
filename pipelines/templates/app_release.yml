@@ -1,5 +1,5 @@
 parameters:
-  environment: 'dev'
+  environment: 'nonprod'
   name: ''
 
 stages:

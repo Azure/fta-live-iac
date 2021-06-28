@@ -1,6 +1,6 @@
 parameters:
   location: 'Australia East'
-  environment: 'dev'
+  environment: 'nonprod'
   name: ''
 
 stages:
