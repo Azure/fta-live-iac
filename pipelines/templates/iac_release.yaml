@@ -22,10 +22,10 @@ stages:
           artifactName: 'templates'
 
       - bash: |
-        az deployment group what-if 
-        --resource-group ${environment}-${name}-rg
-        --name validate-${environment}-${name}-rg
-        --template-uri ${workspace}/templates/main.json
+          az deployment group what-if 
+          --resource-group ${environment}-${name}-rg 
+          --name validate-${environment}-${name}-rg 
+          --template-uri ${workspace}/templates/main.json
         displayName: 'What-if'
         env:
           environment: $(parameters.environment)
