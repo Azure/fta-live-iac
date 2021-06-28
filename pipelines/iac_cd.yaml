@@ -21,13 +21,13 @@ parameters:
     displayName: 'ARM Template File Name'
     default: 'main.json'
 
-trigger: none
-
 resources:
   pipelines:
     - pipeline: ci
       source: fta-live-iac-ci
-      trigger: true
+      trigger: 
+        branches:
+          - main
 
 pool:
   vmImage: 'ubuntu-latest'
