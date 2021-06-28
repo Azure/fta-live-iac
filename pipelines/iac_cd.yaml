@@ -13,7 +13,7 @@ parameters:
   - name: solutionName
     type: string
     displayName: 'Solution Name'
-    default: 'iac'
+    default: 'toylaunch'
     
 trigger: none
 
@@ -30,12 +30,12 @@ stages:
   - template: templates/iac_release.yaml
     parameters:
       location: '${{ parameters.location }}'
-      environment: 'test'
+      environment: 'nonprod'
       name: '${{ parameters.solutionName }}'
 
   - template: templates/app_release.yml
     parameters:
-      environment: 'test'
+      environment: 'nonprod'
       name: '${{ parameters.solutionName }}'
 
   - template: templates/iac_release.yaml

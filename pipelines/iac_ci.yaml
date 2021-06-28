@@ -11,7 +11,7 @@ trigger:
 
 variables:
 - name: _filePath
-  value: '$(Build.SourcesDirectory)/bicep/'
+  value: '$(Build.SourcesDirectory)/deploy/'
 - name: _fileName
   value: 'main'
 
@@ -21,13 +21,8 @@ pool:
 stages:
 - stage: Build
   jobs:
-  - job: Build_ARM_Template
+  - job: Build_Bicep
     steps:
-    - task: PowerShell@2
-      displayName: 'Clone and Install ARMTTK'
-      inputs:
-        filePath: './pipelines/scripts/install_ARMTTK.ps1'
-        arguments: '-installPath "$(Build.BinariesDirectory)"'
 
     - task: PowerShell@2
       displayName: 'Build the ARM Template from the BICEP file'
@@ -42,13 +37,6 @@ stages:
         Contents: '${{ variables._fileName }}.json'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/templates'
 
-    - task: PowerShell@2
-      displayName: 'Linting - ARM-TTK Validate ARM templates adhere to best practice'
-      inputs:
-        filePath: './pipelines/linting/ARM-TTK_linting.ps1'
-        arguments: '-ARMTTKModuleDirectory "$(Build.BinariesDirectory)/arm-ttk-latest" -ARMTTKResultsDirectory "$(Build.ArtifactStagingDirectory)" -TemplatesToScanDirectory "$(Build.ArtifactStagingDirectory)/templates"'
-        errorActionPreference: 'silentlyContinue'
-
     - task: PublishBuildArtifacts@1
       displayName: 'Publish ARM Templates'
       inputs:
@@ -61,7 +49,7 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)/arm-ttk-results'
         ArtifactName: 'arm-ttk-results'
 
-  - job: Build_Code
+  - job: Build_App
     steps:
       - task: UseDotNet@2
         displayName: 'Use .NET Core sdk'
