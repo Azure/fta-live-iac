@@ -1,6 +1,10 @@
 trigger:
 - main
 
+variables:
+  app_service_name: 'prodiac'
+  resource_group: 'prod-iac-rg'
+
 pool:
   vmImage: 'ubuntu-latest'
 
