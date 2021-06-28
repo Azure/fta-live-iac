@@ -15,4 +15,4 @@ steps:
       Action: 'Swap Slots'
       WebAppName: '$(app_service_name)'
       ResourceGroupName: '$(resource_group)'
-      SourceSlot: 'test'
+      SourceSlot: 'staging'
