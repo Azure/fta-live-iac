@@ -37,6 +37,8 @@ stages:
 
     - job: Check_Validation_Result
       pool: server
+      timeoutInMinutes: 4320 
+      steps:
       - task: ManualValidation@0
         timeoutInMinutes: 1440 # task times out in 1 day
         inputs:
@@ -46,6 +48,7 @@ stages:
           onTimeout: 'resume'
 
     - job: Deploy_Infra
+      steps:
       - task: AzureResourceManagerTemplateDeployment@3
         inputs:
           deploymentScope: 'Resource Group'
