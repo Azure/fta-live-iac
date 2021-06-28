@@ -26,7 +26,7 @@ stages:
 
               - task: AzureWebApp@1
                 inputs:
-                  azureSubscription: '$(azure_service_connection)'
+                  azureSubscription: 'azure_service_connection'
                   appName: '${{ parameters.environment }}${{ parameters.name }}'
                   ResourceGroupName: '${{ parameters.environment }}-${{ parameters.name }}-rg'
                   deployToSlotOrASE: true

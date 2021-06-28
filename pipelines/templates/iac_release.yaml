@@ -29,7 +29,7 @@ stages:
               - task: AzureResourceManagerTemplateDeployment@3
                 inputs:
                   deploymentScope: 'Resource Group'
-                  azureResourceManagerConnection: '$(azure_service_connection)'
+                  azureResourceManagerConnection: 'azure_service_connection'
                   subscriptionId: '$(subscription_id)'
                   action: 'Create Or Update Resource Group'
                   resourceGroupName: '${{ parameters.environment }}-${{ parameters.name }}-rg'
