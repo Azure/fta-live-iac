@@ -28,4 +28,7 @@ resource slot 'Microsoft.Web/sites/slots@2021-01-01' = {
   properties: {
     serverFarmId: appServicePlan.id
   }
+  dependsOn: [
+    webApp
+  ]
 }
