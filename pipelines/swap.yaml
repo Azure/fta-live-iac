@@ -7,7 +7,7 @@ pool:
 steps:
   - task: AzureAppServiceManage@0
     inputs:
-      azureSubscription: '$(azure_service_connection)'
+      azureSubscription: 'azure_service_connection'
       Action: 'Swap Slots'
       WebAppName: '$(app_service_name)'
       ResourceGroupName: '$(resource_group)'
