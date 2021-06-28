@@ -26,4 +26,7 @@ resource slot 'Microsoft.Web/sites/slots@2021-01-01' = {
   name: '${environment}${appServiceName}/staging'
   location: location
   kind: 'app'
+  dependsOn: [
+    webApp
+  ]
 }
