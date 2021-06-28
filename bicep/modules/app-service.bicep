@@ -25,7 +25,6 @@ resource webApp 'Microsoft.Web/sites@2020-06-01' = {
 resource slot 'Microsoft.Web/sites/slots@2021-01-01' = {
   name: '${environment}${appServiceName}/staging'
   location: location
-  kind: 'app'
   properties: {
     serverFarmId: appServicePlan.id
   }
