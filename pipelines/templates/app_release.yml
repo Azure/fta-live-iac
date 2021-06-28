@@ -1,6 +1,6 @@
 parameters:
   environment: 'nonprod'
-  name: ''
+  name: 'toylaunch'
 
 stages:
   - stage: 'Deploy_${{ parameters.environment }}_${{ parameters.name }}_application'

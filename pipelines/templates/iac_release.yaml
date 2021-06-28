@@ -1,12 +1,13 @@
 parameters:
   location: 'Australia East'
   environment: 'nonprod'
-  name: ''
+  name: 'toylaunch'
+  fileName: 'main.json'
 
 stages:
   - stage: 'Deploy_${{ parameters.environment }}_${{ parameters.name }}_infrastructure'
     jobs: 
-    - job: Deploy_Infra
+    - job: Validate_Deployment
       steps:
       - task: DownloadBuildArtifacts@0
         displayName: 'Download compiled ARM template'
@@ -25,13 +26,17 @@ stages:
           az deployment group what-if 
           --resource-group ${environment}-${name}-rg 
           --name validate-${environment}-${name}-rg 
-          --template-uri ${workspace}/templates/main.json
+          --template-uri /templates/${filename}
         displayName: 'What-if'
+        name: 'what_if'
+        workingDirectory: $(Pipeline.Workspace)
         env:
           environment: $(parameters.environment)
           name: $(parameters.name)
-          workspace: $(Pipeline.Workspace)
+          filename: $(fileName)
 
+    - job: Check_Validation_Result
+      pool: server
       - task: ManualValidation@0
         timeoutInMinutes: 1440 # task times out in 1 day
         inputs:
@@ -40,6 +45,7 @@ stages:
           instructions: 'Please validate what-if result and resume'
           onTimeout: 'resume'
 
+    - job: Deploy_Infra
       - task: AzureResourceManagerTemplateDeployment@3
         inputs:
           deploymentScope: 'Resource Group'
@@ -50,6 +56,6 @@ stages:
           location: '${{ parameters.location }}'
           templateLocation: 'Linked artifact'
           # these next 2 lines need to be updated based on your template file name, and template file parameters
-          csmFile: '$(Pipeline.Workspace)/templates/main.json'
+          csmFile: '$(Pipeline.Workspace)/templates/$(fileName)'
           overrideParameters: -name "${{ parameters.name }}"  -environment "${{ parameters.environment }}"
           deploymentMode: 'Incremental'

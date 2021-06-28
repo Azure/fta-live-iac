@@ -10,11 +10,17 @@ parameters:
     values:
       - 'Australia East'
       - 'Australia SouthEast'
+
   - name: solutionName
     type: string
     displayName: 'Solution Name'
     default: 'toylaunch'
-    
+
+  - name: fileName
+    type: string
+    displayName: 'ARM Template File Name'
+    default: 'main.json'
+
 trigger: none
 
 resources:
@@ -32,6 +38,7 @@ stages:
       location: '${{ parameters.location }}'
       environment: 'nonprod'
       name: '${{ parameters.solutionName }}'
+      fileName: '${{ parameters.fileName }}'
 
   - template: templates/app_release.yml
     parameters:
@@ -43,6 +50,7 @@ stages:
       location: '${{ parameters.location }}'
       environment: 'prod'
       name: '${{ parameters.solutionName }}'
+      fileName: '${{ parameters.fileName }}'
       
   - template: templates/app_release.yml
     parameters:
