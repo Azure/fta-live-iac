@@ -25,9 +25,9 @@ resources:
   pipelines:
     - pipeline: ci
       source: fta-live-iac-ci
-      trigger: 
-        branches:
-          - main
+      trigger: true
+
+trigger: none
 
 pool:
   vmImage: 'ubuntu-latest'
