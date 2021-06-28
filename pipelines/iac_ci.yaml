@@ -43,12 +43,6 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)/templates'
         ArtifactName: 'templates'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish ARM-TTK scan results'
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)/arm-ttk-results'
-        ArtifactName: 'arm-ttk-results'
-
   - job: Build_App
     steps:
       - task: UseDotNet@2
