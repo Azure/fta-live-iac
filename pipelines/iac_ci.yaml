@@ -29,13 +29,11 @@ stages:
         filePath: './pipelines/scripts/install_ARMTTK.ps1'
         arguments: '-installPath "$(Build.BinariesDirectory)"'
 
-    - task: AzureCLI@2
+    - task: PowerShell@2
       displayName: 'Build the ARM Template from the BICEP file'
       inputs:
-        azureSubscription: '$(_serviceConnection)'
-        scriptType: 'pscore'
-        scriptLocation: 'inlineScript'
-        inlineScript: 'Get-ChildItem -Path "${{ variables._filePath }}" -Filter *.bicep | foreach { az bicep build --file $_.FullName }'
+        targetType: 'inline'
+        script: 'az bicep build --file ${{ variables._filePath }}${{ variables._fileName }}.bicep'
 
     - task: CopyFiles@2
       displayName: 'Copy ARM Template files to Staging directory'
