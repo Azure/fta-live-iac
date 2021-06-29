@@ -23,10 +23,10 @@ stages:
           artifactName: 'templates'
 
       - bash: |
-          az deployment group what-if 
-          --resource-group "${environment}-${name}-rg" 
-          --name "validate-${environment}-${name}-rg" 
-          --template-uri "/templates/${filename}"
+          az deployment group what-if \
+          --resource-group ${environment}-${name}-rg \
+          --name validate-${environment}-${name}-rg \
+          --template-uri /templates/${filename}
         displayName: 'What-if'
         name: 'what_if'
         workingDirectory: $(Pipeline.Workspace)
