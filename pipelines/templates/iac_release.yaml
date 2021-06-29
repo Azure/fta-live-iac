@@ -34,7 +34,7 @@ stages:
             --resource-group ${{ parameters.environment }}-${{ parameters.name }}-rg \
             --name validate-${{ parameters.environment }}-${{ parameters.name }}-rg \
             --template-file $(Pipeline.Workspace)/templates/${{ parameters.fileName }} \
-            --parameters appServiceAppName=${{ parameters.name }} environmentType=${{ parameters.environment }}
+            --parameters environmentType=${{ parameters.environment }}
 
 
     - deployment: '${{ parameters.environment }}_deployment'
