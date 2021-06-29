@@ -27,7 +27,8 @@ resources:
       source: fta-live-iac-ci
       trigger: true
 
-trigger: none
+trigger:
+- main
 
 pool:
   vmImage: 'ubuntu-latest'
