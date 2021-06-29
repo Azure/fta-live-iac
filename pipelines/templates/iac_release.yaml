@@ -68,5 +68,5 @@ stages:
                 templateLocation: 'Linked artifact'
                 # these next 2 lines need to be updated based on your template file name, and template file parameters
                 csmFile: '$(Pipeline.Workspace)/templates/${{ parameters.fileName }}'
-                overrideParameters: -name "${{ parameters.name }}"  -environment "${{ parameters.environment }}"
+                overrideParameters: name=${{ parameters.name }} environment=${{ parameters.environment }}
                 deploymentMode: 'Incremental'
