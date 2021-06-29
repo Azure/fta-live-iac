@@ -33,7 +33,7 @@ stages:
             az deployment group what-if \
             --resource-group ${{ parameters.environment }}-${{ parameters.name }}-rg \
             --name validate-${{ parameters.environment }}-${{ parameters.name }}-rg \
-            --template-file ./templates/${{ parameters.fileName }} \
+            --template-file $(Pipeline.Workspace)/templates/$(fileName) \
             --parameters environmentType=${{ parameters.environment }}
 
     - job: Check_Validation_Result
