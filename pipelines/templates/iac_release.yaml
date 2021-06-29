@@ -33,7 +33,7 @@ stages:
             az deployment group what-if \
             --resource-group ${{ parameters.environment }}-${{ parameters.name }}-rg \
             --name validate-${{ parameters.environment }}-${{ parameters.name }}-rg \
-            --template-file $(Pipeline.Workspace)/templates/$(fileName) \
+            --template-file $(Pipeline.Workspace)/templates/${{ parameters.fileName }} \
             --parameters environmentType=${{ parameters.environment }}
 
     - job: Check_Validation_Result
@@ -62,6 +62,6 @@ stages:
           location: '${{ parameters.location }}'
           templateLocation: 'Linked artifact'
           # these next 2 lines need to be updated based on your template file name, and template file parameters
-          csmFile: '$(Pipeline.Workspace)/templates/$(fileName)'
+          csmFile: '$(Pipeline.Workspace)/templates/${{ parameters.fileName }}'
           overrideParameters: -name "${{ parameters.name }}"  -environment "${{ parameters.environment }}"
           deploymentMode: 'Incremental'
