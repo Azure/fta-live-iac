@@ -6,7 +6,8 @@
 # For your production deployments, you probably want to run CI on ALL branches.
 # You may have separate CI (lighter-weight) processes for your Dev/* builds...
 
-trigger: main
+trigger: 
+- main
 
 variables:
 - name: _filePath
