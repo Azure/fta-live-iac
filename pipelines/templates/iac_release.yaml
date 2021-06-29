@@ -22,19 +22,23 @@ stages:
           downloadPath: '$(Pipeline.Workspace)'
           artifactName: 'templates'
 
-      - bash: |
-          az deployment group what-if \
-          --resource-group ${environment}-${name}-rg \
-          --name validate-${environment}-${name}-rg \
-          --template-file ./templates/${filename} \
-          --parameters environmentType=${environment}
-        displayName: 'What-if'
+      - task: AzureCLI@2
         name: 'what_if'
-        workingDirectory: $(Pipeline.Workspace)
-        env:
-          environment: ${{ parameters.environment }}
-          name: ${{ parameters.name }}
-          filename: ${{ parameters.fileName }}
+        displayName: 'What-If'
+        inputs:
+          azureSubscription: 'azure_service_connection'
+          scriptType: ps
+          scriptLocation: inlineScript
+          arguments:
+            -environment ${{ parameters.environment }} `
+            -name ${{ parameters.name }} `
+            -filename ${{ parameters.fileName }}
+          inlineScript: |
+            az deployment group what-if \
+            --resource-group ${environment}-${name}-rg \
+            --name validate-${environment}-${name}-rg \
+            --template-file ./templates/${filename} \
+            --parameters environmentType=${environment}
 
     - job: Check_Validation_Result
       pool: server
