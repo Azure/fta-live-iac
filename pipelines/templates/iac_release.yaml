@@ -26,7 +26,8 @@ stages:
           az deployment group what-if \
           --resource-group ${environment}-${name}-rg \
           --name validate-${environment}-${name}-rg \
-          --template-file ./templates/${filename}
+          --template-file ./templates/${filename} \
+          --parameters environmentType=${environment}
         displayName: 'What-if'
         name: 'what_if'
         workingDirectory: $(Pipeline.Workspace)
