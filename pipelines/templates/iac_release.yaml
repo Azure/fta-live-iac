@@ -34,7 +34,7 @@ stages:
             --resource-group ${{ parameters.environment }}-${{ parameters.name }}-rg \
             --name validate-${{ parameters.environment }}-${{ parameters.name }}-rg \
             --template-file $(Pipeline.Workspace)/templates/${{ parameters.fileName }} \
-            --parameters environmentType=${{ parameters.environment }}
+            --parameters appServiceAppName=${{ parameters.environment }}-${{ parameters.name }} environmentType=${{ parameters.environment }}
 
 
     - deployment: '${{ parameters.environment }}_deployment'
@@ -68,5 +68,5 @@ stages:
                 templateLocation: 'Linked artifact'
                 # these next 2 lines need to be updated based on your template file name, and template file parameters
                 csmFile: '$(Pipeline.Workspace)/templates/${{ parameters.fileName }}'
-                overrideParameters: -environmentType ${{ parameters.environment }}
+                overrideParameters: appServiceAppName "${{ parameters.environment }}-${{ parameters.name }}" -environmentType "${{ parameters.environment }}""
                 deploymentMode: 'Incremental'
