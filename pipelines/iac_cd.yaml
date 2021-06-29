@@ -14,7 +14,7 @@ parameters:
   - name: solutionName
     type: string
     displayName: 'Solution Name'
-    default: 'toylaunch-wviriya'
+    default: 'toylaunch'
 
   - name: fileName
     type: string
