@@ -1,0 +1,142 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.63.48766",
+      "templateHash": "3117284321125363945"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "[format('toylaunch{0}', uniqueString(resourceGroup().id))]"
+    },
+    "appServiceAppName": {
+      "type": "string",
+      "defaultValue": "[format('toylaunch{0}', uniqueString(resourceGroup().id))]"
+    },
+    "environmentType": {
+      "type": "string",
+      "allowedValues": [
+        "nonprod",
+        "prod"
+      ]
+    }
+  },
+  "functions": [],
+  "variables": {
+    "storageAccountSkuName": "[if(equals(parameters('environmentType'), 'prod'), 'Standard_GRS', 'Standard_LRS')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[variables('storageAccountSkuName')]"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2019-10-01",
+      "name": "appService",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "appServiceAppName": {
+            "value": "[parameters('appServiceAppName')]"
+          },
+          "environmentType": {
+            "value": "[parameters('environmentType')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.4.63.48766",
+              "templateHash": "6516919848964583013"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "appServiceAppName": {
+              "type": "string"
+            },
+            "environmentType": {
+              "type": "string",
+              "allowedValues": [
+                "nonprod",
+                "prod"
+              ]
+            }
+          },
+          "functions": [],
+          "variables": {
+            "appServicePlanName": "toy-product-launch-plan",
+            "appServicePlanSkuName": "[if(equals(parameters('environmentType'), 'prod'), 'P2_v3', 'F1')]",
+            "appServicePlanTierName": "[if(equals(parameters('environmentType'), 'prod'), 'PremiumV3', 'Free')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2020-06-01",
+              "name": "[variables('appServicePlanName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "[variables('appServicePlanSkuName')]",
+                "tier": "[variables('appServicePlanTierName')]"
+              }
+            },
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2020-06-01",
+              "name": "[parameters('appServiceAppName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+                "httpsOnly": true
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "appServiceAppHostName": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/sites', parameters('appServiceAppName'))).defaultHostName]"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "appServiceAppHostName": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', 'appService'), '2019-10-01').outputs.appServiceAppHostName.value]"
+    }
+  }
+}
