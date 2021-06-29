@@ -24,19 +24,20 @@ stages:
 
       - bash: |
           az deployment group what-if 
-          --resource-group ${environment}-${name}-rg 
-          --name validate-${environment}-${name}-rg 
-          --template-uri /templates/${filename}
+          --resource-group "${environment}-${name}-rg" 
+          --name "validate-${environment}-${name}-rg" 
+          --template-uri "/templates/${filename}"
         displayName: 'What-if'
         name: 'what_if'
         workingDirectory: $(Pipeline.Workspace)
         env:
-          environment: $(parameters.environment)
-          name: $(parameters.name)
-          filename: $(fileName)
+          environment: ${{ parameters.environment }}
+          name: ${{ parameters.name }}
+          filename: ${{ parameters.fileName }}
 
     - job: Check_Validation_Result
       pool: server
+      dependsOn: Validate_Deployment
       timeoutInMinutes: 4320 
       steps:
       - task: ManualValidation@0
@@ -48,6 +49,7 @@ stages:
           onTimeout: 'resume'
 
     - job: Deploy_Infra
+      dependsOn: Check_Validation_Result
       steps:
       - task: AzureResourceManagerTemplateDeployment@3
         inputs:
