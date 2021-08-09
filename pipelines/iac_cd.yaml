@@ -6,10 +6,10 @@ parameters:
   - name: location
     type: string
     displayName: 'Azure Region'
-    default: 'Australia East'
+    default: 'AustraliaEast'
     values:
-      - 'Australia East'
-      - 'Australia SouthEast'
+      - 'AustraliaEast'
+      - 'AustraliaSouthEast'
 
   - name: solutionName
     type: string
