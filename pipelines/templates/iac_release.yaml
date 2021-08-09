@@ -30,6 +30,7 @@ stages:
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
+            az group create -l ${{ parameters.location }} -n ${{ parameters.environment }}-${{ parameters.name }}-rg
             az deployment group what-if \
             --resource-group ${{ parameters.environment }}-${{ parameters.name }}-rg \
             --name validate-${{ parameters.environment }}-${{ parameters.name }}-rg \
