@@ -10,6 +10,7 @@ param environmentType string
 var appServicePlanName = 'toy-product-launch-plan'
 var appServicePlanSkuName = (environmentType == 'prod') ? 'P2V3' : 'F1'
 var appServicePlanTierName = (environmentType == 'prod') ? 'PremiumV3' : 'Free'
+var skuCapacity = (environmentType == 'prod') ? 2 : 1
 
 resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
   name: appServicePlanName
@@ -17,6 +18,7 @@ resource appServicePlan 'Microsoft.Web/serverFarms@2020-06-01' = {
   sku: {
     name: appServicePlanSkuName
     tier: appServicePlanTierName
+    capacity: skuCapacity 
   }
 }
 
