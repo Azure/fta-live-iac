@@ -1,5 +1,5 @@
 parameters:
-  location: 'Australia East'
+  location: 'AustraliaEast'
   environment: 'nonprod'
   name: 'toylaunch'
   fileName: 'main.json'
